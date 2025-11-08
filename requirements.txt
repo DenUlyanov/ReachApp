@@ -1,1 +1,7 @@
 # Python dependencies
+playwright==1.48.0
+playwright-stealth==1.0.6
+python-dotenv==1.0.0
+colorlog==6.8.2
+pytest==8.3.3
+pytest-asyncio==0.24.0
