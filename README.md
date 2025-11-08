@@ -149,7 +149,8 @@ python linkedin_login_bot.py
 
 ```python
 import asyncio
-from linkedin_login_bot import LinkedInBot
+from src.poc.linkedin_login_bot import LinkedInBot
+
 
 async def main():
     bot = LinkedInBot()
@@ -161,6 +162,7 @@ async def main():
         await bot.navigate_to_sales_navigator()
 
     await bot.cleanup()
+
 
 asyncio.run(main())
 ```

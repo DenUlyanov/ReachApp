@@ -59,8 +59,8 @@ class LinkedInBot:
         self.max_attempts = int(os.getenv('MAX_LOGIN_ATTEMPTS', '3'))
 
         # Create necessary directories
-        self.screenshot_dir = Path('screenshots')
-        self.log_dir = Path('logs')
+        self.screenshot_dir = Path('../../screenshots')
+        self.log_dir = Path('../../logs')
         self.screenshot_dir.mkdir(exist_ok=True)
         self.log_dir.mkdir(exist_ok=True)
 
