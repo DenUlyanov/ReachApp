@@ -145,28 +145,6 @@ python linkedin_login_bot.py
 python linkedin_login_bot.py
 ```
 
-### Advanced Usage
-
-```python
-import asyncio
-from src.poc.linkedin_login_bot import LinkedInBot
-
-
-async def main():
-    bot = LinkedInBot()
-    await bot.setup_browser()
-
-    success = await bot.login()
-    if success:
-        # Perform custom actions here
-        await bot.navigate_to_sales_navigator()
-
-    await bot.cleanup()
-
-
-asyncio.run(main())
-```
-
 ## Anti-Detection Features Explained
 
 ### 1. Browser Fingerprinting

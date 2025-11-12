@@ -80,6 +80,7 @@ class LinkedInBot:
             '%(asctime)s - %(levelname)s - %(message)s'
         ))
         logger.addHandler(file_handler)
+
         logger.info(f"Logging to file: {log_file}")
 
     async def human_delay(self, min_ms: int = 1000, max_ms: int = 8000):
@@ -162,45 +163,79 @@ class LinkedInBot:
         if not self.page:
             return False, ""
 
-        # Check for CAPTCHA
+        # Check for VISIBLE CAPTCHA challenges only
         captcha_selectors = [
-            '[id*="captcha"]',
-            '[class*="captcha"]',
-            'iframe[src*="recaptcha"]',
-            'iframe[src*="captcha"]',
+            # Look for visible reCAPTCHA iframe (the actual challenge)
+            'iframe[src*="recaptcha"][src*="bframe"]',  # reCAPTCHA challenge frame
+            'iframe[title*="recaptcha"]',
+            # Look for visible CAPTCHA containers
+            '[id*="captcha"]:visible',
+            '[class*="captcha"]:visible',
         ]
 
         for selector in captcha_selectors:
-            if await self.page.locator(selector).count() > 0:
-                logger.warning("CAPTCHA detected!")
-                await self.take_screenshot("captcha_detected")
-                return True, "CAPTCHA"
+            count = await self.page.locator(selector).count()
+            if count > 0:
+                # Additional check: make sure it's actually visible
+                try:
+                    elements = await self.page.locator(selector).all()
+                    for element in elements:
+                        is_visible = await element.is_visible()
+                        if is_visible:
+                            logger.warning(f"Visible CAPTCHA detected! Selector: {selector}")
+                            html = await element.evaluate("el => el.outerHTML")
+                            logger.info(f"CAPTCHA element: {html[:200]}")
+                            await self.take_screenshot("captcha_detected")
+                            return True, "CAPTCHA"
+                except Exception as e:
+                    logger.error(f"Error checking element visibility: {e}")
 
-        # Check for 2FA/verification
+        # Check for 2FA/verification - use more specific selectors
         verification_selectors = [
-            'text=/enter.*code/i',
-            'text=/verification/i',
-            'text=/authenticate/i',
-            '[id*="verification"]',
-            '[id*="challenge"]',
+            # More specific patterns for 2FA
+            'text=/enter.*verification.*code/i',  # "Enter verification code"
+            'text=/enter.*security.*code/i',  # "Enter security code"
+            'text=/two.*factor/i',  # "Two-factor authentication"
+            'text=/6.*digit.*code/i',  # "6-digit code"
+            'input[name*="verification"]',
+            'input[name*="pin"]',
+            'input[id*="verification"]',
+            'input[id*="challenge"]',
+            '[data-test-id*="verification"]',
+            # LinkedIn-specific 2FA selectors
+            'input[id="input__email_verification_pin"]',
+            'input[id="input__phone_verification_pin"]',
         ]
 
         for selector in verification_selectors:
-            if await self.page.locator(selector).count() > 0:
-                logger.warning("2FA/Verification challenge detected!")
-                await self.take_screenshot("verification_detected")
-                return True, "2FA/Verification"
+            try:
+                count = await self.page.locator(selector).count()
+                if count > 0:
+                    # Verify it's actually visible
+                    element = self.page.locator(selector).first
+                    if await element.is_visible():
+                        logger.warning(f"2FA/Verification challenge detected! Selector: {selector}")
+                        await self.take_screenshot("verification_detected")
+                        return True, "2FA/Verification"
+            except Exception as e:
+                # Selector might not support is_visible (like text selectors)
+                # In that case, just check count
+                if await self.page.locator(selector).count() > 0:
+                    logger.warning(f"2FA/Verification challenge detected! Selector: {selector}")
+                    await self.take_screenshot("verification_detected")
+                    return True, "2FA/Verification"
 
         # Check for unusual activity warnings
         warning_selectors = [
-            'text=/unusual activity/i',
-            'text=/suspicious/i',
-            'text=/temporarily restricted/i',
+            'text=/unusual.*activity/i',
+            'text=/suspicious.*activity/i',
+            'text=/temporarily.*restricted/i',
+            'text=/account.*restricted/i',
         ]
 
         for selector in warning_selectors:
             if await self.page.locator(selector).count() > 0:
-                logger.warning("Account warning detected!")
+                logger.warning(f"Account warning detected! Selector: {selector}")
                 await self.take_screenshot("account_warning")
                 return True, "Account Warning"
 
@@ -222,6 +257,13 @@ class LinkedInBot:
             '--disable-features=IsolateOrigins,site-per-process',
         ]
 
+        # Add window size/maximized only for non-headless mode
+        if not self.headless:
+            launch_args.extend([
+                '--start-maximized',
+                '--window-position=0,0',
+            ])
+
         # Launch browser
         self.browser = await playwright.chromium.launch(
             headless=self.headless,
@@ -229,13 +271,14 @@ class LinkedInBot:
         )
 
         # Create context with realistic settings
+        # Use no_viewport for maximized window, or specific size for consistency
         self.context = await self.browser.new_context(
-            viewport={'width': 1920, 'height': 1080},
+            viewport={'width': 1920, 'height': 1080} if self.headless else None,
             user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
             locale='en-US',
             timezone_id='America/New_York',
             permissions=['geolocation'],
-            geolocation={'latitude': 40.7128, 'longitude': -74.0060},  # New York
+            geolocation={'latitude': 40.7128, 'longitude': -74.0060},
             color_scheme='light',
         )
 
@@ -358,7 +401,7 @@ class LinkedInBot:
                 return False
 
             # Verify login success
-            await self.page.wait_for_load_state('networkidle', timeout=self.timeout)
+            await self.page.wait_for_load_state('domcontentloaded', timeout=self.timeout)
 
             # Check if we're on the feed page (successful login)
             if 'feed' in self.page.url or 'mynetwork' in self.page.url:
@@ -375,39 +418,6 @@ class LinkedInBot:
             await self.take_screenshot("error_login")
             return False
 
-    async def navigate_to_sales_navigator(self) -> bool:
-        """
-        Navigate to Sales Navigator (if user has access)
-
-        Returns:
-            bool: True if navigation successful, False otherwise
-        """
-        if not self.page:
-            return False
-
-        try:
-            logger.info("Navigating to Sales Navigator...")
-            await self.page.goto(self.sales_nav_url, wait_until='networkidle')
-            await self.human_delay(2000, 4000)
-
-            # Random interactions
-            await self.random_mouse_movement()
-            await self.random_scroll()
-
-            await self.take_screenshot("04_sales_navigator")
-
-            # Check if we have access
-            if 'sales' in self.page.url:
-                logger.info("Successfully accessed Sales Navigator")
-                return True
-            else:
-                logger.warning("May not have Sales Navigator access")
-                return False
-
-        except Exception as e:
-            logger.error(f"Sales Navigator navigation error: {e}")
-            await self.take_screenshot("error_sales_nav")
-            return False
 
     async def run(self):
         """Main execution flow"""
@@ -445,7 +455,7 @@ class LinkedInBot:
             await self.human_delay(2000, 4000)
 
             # Navigate to Sales Navigator (if configured)
-            await self.navigate_to_sales_navigator()
+            # TODO
 
             # Keep browser open for inspection if not headless
             if not self.headless:
