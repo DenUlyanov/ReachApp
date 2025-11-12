@@ -104,7 +104,7 @@ def check_env_file():
     print_header("Checking Environment Configuration")
 
     env_file = Path('.env')
-    env_example = Path('.env.example')
+    env_example = Path('.env')
 
     if not env_file.exists():
         print("✗ .env file not found")
@@ -169,9 +169,9 @@ def check_file_structure():
     print_header("Checking Project Files")
 
     required_files = [
-        'linkedin_login_bot.py',
+        'src/poc/linkedin_login_bot.py',
         'requirements.txt',
-        '.env.example',
+        '.env',
         '.gitignore',
         'README.md',
     ]
@@ -236,7 +236,7 @@ def run_all_checks():
         print("\nCommon fixes:")
         print("- Install dependencies: pip install -r requirements.txt")
         print("- Install browsers: playwright install chromium")
-        print("- Create .env: cp .env.example .env")
+        print("- Create .env: cp .env .env")
         print("- Configure credentials in .env")
         return False
 

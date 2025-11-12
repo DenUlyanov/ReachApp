@@ -89,7 +89,7 @@ See [QUICK_START.md](QUICK_START.md) for a 5-minute setup guide.
 
 4. **Configure credentials**
    ```bash
-   cp .env.example .env
+   cp .env .env
    # Edit .env and add your LinkedIn credentials
    ```
 

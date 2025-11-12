@@ -33,7 +33,7 @@ Downloading Chromium...
 
 ```bash
 # Copy the example config
-cp .env.example .env
+cp .env .env
 
 # Edit .env with your favorite editor
 nano .env
@@ -342,7 +342,7 @@ await self.human_delay(2000, 10000)  # Slower
 pip install -r requirements.txt && playwright install chromium
 
 # Setup config
-cp .env.example .env && nano .env
+cp .env .env && nano .env
 
 # Verify setup
 python check_setup.py
