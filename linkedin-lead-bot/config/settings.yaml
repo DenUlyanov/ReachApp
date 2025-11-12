@@ -1,0 +1,162 @@
+# LinkedIn Bot Settings
+#
+# This file contains configuration settings for timing, browser behavior,
+# and other operational parameters.
+
+# Delay Configuration (in seconds)
+delays:
+  # Typing delays (per character)
+  min_typing_delay: 0.05
+  max_typing_delay: 0.15
+
+  # Action delays (between actions like clicks, navigation)
+  min_action_delay: 1.0
+  max_action_delay: 3.0
+
+  # Page load delays (after navigation)
+  min_page_load_delay: 2.0
+  max_page_load_delay: 4.0
+
+  # Scroll delays
+  min_scroll_delay: 0.5
+  max_scroll_delay: 2.0
+
+  # Human thinking time (before important actions)
+  min_thinking_delay: 1.5
+  max_thinking_delay: 4.0
+
+# Browser Configuration
+browser:
+  # Viewport size
+  viewport_width: 1920
+  viewport_height: 1080
+
+  # User agent (updated Chrome on Windows)
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+
+  # Locale and timezone
+  locale: "en-US"
+  timezone: "America/New_York"
+
+  # Geolocation (New York City)
+  geolocation:
+    latitude: 40.7128
+    longitude: -74.0060
+
+  # Browser launch arguments
+  args:
+    - "--disable-blink-features=AutomationControlled"
+    - "--disable-dev-shm-usage"
+    - "--no-sandbox"
+    - "--disable-setuid-sandbox"
+    - "--disable-web-security"
+    - "--disable-features=IsolateOrigins,site-per-process"
+
+# Timeout Configuration (in milliseconds)
+timeouts:
+  # Default timeout for most operations
+  default: 30000  # 30 seconds
+
+  # Navigation timeout
+  navigation: 60000  # 60 seconds
+
+  # Action timeout (clicks, typing, etc.)
+  action: 10000  # 10 seconds
+
+  # Element wait timeout
+  element_wait: 30000  # 30 seconds
+
+  # Network idle timeout
+  network_idle: 30000  # 30 seconds
+
+# Retry Configuration
+retry:
+  # Maximum number of retry attempts
+  max_attempts: 3
+
+  # Delay between retries (seconds)
+  delay: 10
+
+  # Backoff multiplier
+  backoff: 2.0
+
+# Screenshot Configuration
+screenshots:
+  # Take screenshots on error
+  on_error: true
+
+  # Take screenshots on success
+  on_success: true
+
+  # Screenshot format (png, jpg)
+  format: "png"
+
+  # JPEG quality (0-100)
+  quality: 90
+
+  # Capture full page
+  full_page: true
+
+  # Cleanup old screenshots (days to keep)
+  cleanup_days: 7
+
+# Logging Configuration
+logging:
+  # Default log level
+  level: "INFO"
+
+  # Log to file
+  file_enabled: true
+
+  # Log to console
+  console_enabled: true
+
+  # Log file rotation
+  max_bytes: 10485760  # 10 MB
+  backup_count: 5
+
+# Feature Flags
+features:
+  # Enable/disable specific features
+  video_recording: false
+  trace_recording: false
+  performance_monitoring: false
+
+  # Human-like behavior
+  random_mouse_movements: true
+  random_scrolling: true
+  variable_typing_speed: true
+
+  # Security challenge handling
+  auto_captcha_detection: true
+  auto_2fa_detection: true
+  manual_challenge_wait: 60  # seconds to wait for manual intervention
+
+# Sales Navigator Configuration
+sales_navigator:
+  # Default search filters
+  default_location: "United States"
+  default_company_size: "1-10 employees"
+  default_industry: ""
+
+  # Search limits
+  max_results_per_search: 100
+  max_pages_to_scrape: 5
+
+  # Rate limiting
+  requests_per_minute: 10
+  delay_between_searches: 5  # seconds
+
+# Development/Testing
+development:
+  # Enable debug mode
+  debug: false
+
+  # Slow motion (milliseconds between operations)
+  slow_mo: 0
+
+  # Disable timeouts (for debugging)
+  disable_timeouts: false
+
+  # Mock mode (for testing without actual LinkedIn)
+  mock_mode: false
