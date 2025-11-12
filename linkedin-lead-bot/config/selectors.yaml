@@ -1,0 +1,63 @@
+# UI Selectors for LinkedIn Bot
+#
+# This file contains all CSS selectors used throughout the application.
+# Centralizing selectors makes maintenance easier when LinkedIn's UI changes.
+
+login_page:
+  email_input: "#username"
+  password_input: "#password"
+  sign_in_button: 'button[type="submit"]'
+  captcha_frame: 'iframe[title*="recaptcha"]'
+  error_message: '.alert-error'
+  remember_me_checkbox: '#rememberMeOptIn-checkbox'
+
+feed_page:
+  nav_bar: "nav.global-nav"
+  feed_container: ".feed-shared-update-v2"
+  post_item: '[data-id*="urn:li:activity"]'
+  like_button: 'button[aria-label*="Like"]'
+  comment_button: 'button[aria-label*="Comment"]'
+  share_button: 'button[aria-label*="Share"]'
+  profile_link: 'a[href*="/in/"]'
+  notifications_icon: '#global-nav-icon-notifications'
+  messaging_icon: '#global-nav-icon-messaging'
+  search_bar: 'input[placeholder*="Search"]'
+
+sales_navigator_page:
+  main_content: "[data-chameleon-result-urn]"
+  search_input: 'input[placeholder*="Search"]'
+  company_card: '[data-anonymize="company-name"]'
+  lead_card: '[data-anonymize="person-name"]'
+  save_button: 'button[data-control-name="save"]'
+  filter_panel: '[data-control-name="filter_panel"]'
+  results_count: '.search-results__total'
+  pagination: '.search-results__pagination'
+
+# Security Challenge Selectors
+security:
+  captcha:
+    recaptcha_iframe: 'iframe[src*="recaptcha"][src*="bframe"]'
+    recaptcha_checkbox: 'iframe[title*="recaptcha"]'
+    captcha_container: '[id*="captcha"]'
+
+  verification:
+    pin_input: 'input[id*="verification"]'
+    email_pin_input: 'input[id="input__email_verification_pin"]'
+    phone_pin_input: 'input[id="input__phone_verification_pin"]'
+    verification_header: 'h1:has-text("Let\'s verify it\'s you")'
+    submit_button: 'button[type="submit"]'
+
+  warnings:
+    unusual_activity: 'text=/unusual.*activity/i'
+    account_restricted: 'text=/account.*restricted/i'
+    temporarily_restricted: 'text=/temporarily.*restricted/i'
+
+# Common elements
+common:
+  close_button: 'button[aria-label*="Close"]'
+  dismiss_button: 'button[aria-label*="Dismiss"]'
+  submit_button: 'button[type="submit"]'
+  cancel_button: 'button[aria-label*="Cancel"]'
+  loading_spinner: '.loading-spinner'
+  error_alert: '.alert-error'
+  success_alert: '.alert-success'
