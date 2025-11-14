@@ -1,415 +1,328 @@
-# LinkedIn Login Bot POC
+# LinkedIn Lead Bot
 
-A proof-of-concept automation bot for LinkedIn login with advanced anti-detection capabilities using Playwright and stealth techniques.
+**Professional Test Automation Framework with Page Object Model**
 
-## Overview
-
-This project demonstrates automated LinkedIn login with human-like behavior patterns to minimize detection. It includes comprehensive error handling, CAPTCHA/2FA detection, and detailed logging for educational and testing purposes.
-
-**Important:** This is a proof-of-concept for educational purposes. Always comply with LinkedIn's Terms of Service and use responsibly.
+A robust, maintainable, and extensible LinkedIn automation framework built with Python 3.11+, Playwright, and modern software engineering practices.
 
 ## Features
 
-### Anti-Detection Capabilities
-
-- **Browser Fingerprinting Protection**
-  - Disabled automation flags (`navigator.webdriver`)
-  - Custom user agent and realistic viewport
-  - Mocked plugins and Chrome runtime
-  - Proper timezone and geolocation settings
-
-- **Human-Like Behavior**
-  - Random delays between actions (1-8 seconds)
-  - Human-like typing with 50-150ms keystroke delays
-  - Random mouse movements with natural curves
-  - Random scrolling behavior
-  - Realistic interaction patterns
-
-- **Security Challenge Detection**
-  - CAPTCHA detection (reCAPTCHA, image challenges)
-  - 2FA/verification prompt detection
-  - Unusual activity warning detection
-  - Screenshot capture for all scenarios
-
-- **Comprehensive Logging**
-  - Colored console output with timestamps
-  - File-based logging with rotation
-  - Debug mode for detailed troubleshooting
-  - Screenshot capture at key steps
+- **Page Object Model (POM)** - Clean separation of page logic and test code
+- **Async/Await** - Modern Python async patterns for efficient execution
+- **Anti-Detection** - Comprehensive stealth features to avoid bot detection
+- **Type Safety** - Full type hints with Pydantic validation
+- **Configurable** - YAML-based configuration for easy customization
+- **Tested** - Unit, integration, and E2E tests with pytest
+- **Documented** - Comprehensive inline documentation with Google-style docstrings
+- **Modular** - SOLID principles and clean architecture
 
 ## Project Structure
 
 ```
-ReachApp/
-├── linkedin_login_bot.py    # Main bot implementation
-├── check_setup.py            # Setup verification script
-├── requirements.txt          # Python dependencies
-├── .env.example             # Configuration template
-├── .env                     # Your credentials (DO NOT COMMIT)
-├── .gitignore              # Git ignore rules
-├── screenshots/            # Auto-generated screenshots
-├── logs/                   # Bot execution logs
-└── docs/                   # Additional documentation
-    ├── README.md           # This file
-    ├── QUICK_START.md      # 5-minute setup guide
-    ├── START_HERE.md       # Project overview
-    ├── PROJECT_STRUCTURE.md # Architecture details
-    ├── TESTING_CHECKLIST.md # Testing guide
-    └── ARCHITECTURE_DIAGRAM.txt # System diagrams
+linkedin-lead-bot/
+├── src/                      # Source code
+│   ├── config/              # Configuration management
+│   ├── core/                # Browser and base page
+│   ├── pages/               # Page objects
+│   ├── utils/               # Utility modules
+│   ├── bot/                 # Main bot orchestrator
+│   └── exceptions.py        # Custom exceptions
+├── tests/                    # Test suite
+│   ├── unit/                # Unit tests
+│   ├── integration/         # Integration tests
+│   └── e2e/                 # End-to-end tests
+├── config/                   # Configuration files
+│   ├── selectors.yaml       # UI selectors
+│   └── settings.yaml        # Bot settings
+├── data/                     # Runtime data
+│   ├── logs/                # Log files
+│   └── screenshots/         # Screenshots
+├── scripts/                  # Entry point scripts
+│   ├── run_bot.py           # Main bot runner
+│   └── check_setup.py       # Setup verification
+├── .env.example             # Environment template
+├── requirements.txt         # Dependencies
+├── setup.py                 # Package setup
+└── pytest.ini               # Test configuration
 ```
 
 ## Quick Start
 
-See [QUICK_START.md](QUICK_START.md) for a 5-minute setup guide.
-
 ### Prerequisites
 
-- Python 3.8 or higher
+- Python 3.11 or higher
 - pip (Python package manager)
-- LinkedIn account credentials
-- Internet connection
+- Git
 
 ### Installation
 
-1. **Clone the repository**
+1. **Clone the repository:**
    ```bash
    git clone <repository-url>
-   cd ReachApp
+   cd linkedin-lead-bot
    ```
 
-2. **Install dependencies**
+2. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Install Playwright browsers**
+3. **Install Playwright browsers:**
    ```bash
    playwright install chromium
    ```
 
-4. **Configure credentials**
+4. **Configure environment:**
    ```bash
-   cp .env .env
+   cp .env.example .env
    # Edit .env and add your LinkedIn credentials
    ```
 
-5. **Verify setup**
+5. **Verify setup:**
    ```bash
-   python check_setup.py
+   python scripts/check_setup.py
    ```
 
-6. **Run the bot**
-   ```bash
-   python linkedin_login_bot.py
-   ```
+### Usage
+
+**Run default workflow (login + feed + sales nav):**
+```bash
+python scripts/run_bot.py
+```
+
+**Run in headless mode:**
+```bash
+python scripts/run_bot.py --headless
+```
+
+**Run health check:**
+```bash
+python scripts/run_bot.py --health-check
+```
+
+**Login only:**
+```bash
+python scripts/run_bot.py --login-only
+```
+
+**Run with custom credentials:**
+```bash
+python scripts/run_bot.py --email user@example.com --password secret123
+```
+
+**Enable debug mode:**
+```bash
+python scripts/run_bot.py --slow-mo 500 --log-level DEBUG
+```
+
+### Running Tests
+
+**Run all tests:**
+```bash
+pytest
+```
+
+**Run specific test categories:**
+```bash
+pytest -m unit                # Unit tests only
+pytest -m integration         # Integration tests only
+pytest -m e2e                 # End-to-end tests only
+```
+
+**Run with coverage:**
+```bash
+pytest --cov=src --cov-report=html
+```
+
+**Run specific test file:**
+```bash
+pytest tests/unit/test_helpers.py -v
+```
 
 ## Configuration
 
 ### Environment Variables (.env)
 
 ```env
-# LinkedIn Credentials
 LINKEDIN_EMAIL=your-email@example.com
-LINKEDIN_PASSWORD=your-secure-password
-
-# Optional Settings
-SALES_NAVIGATOR_URL=https://www.linkedin.com/sales
+LINKEDIN_PASSWORD=your-password
 HEADLESS_MODE=false
+SLOW_MO=0
 TIMEOUT=30000
 MAX_LOGIN_ATTEMPTS=3
 LOG_LEVEL=INFO
 ```
 
-### Configuration Options
+### Settings (config/settings.yaml)
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `LINKEDIN_EMAIL` | Your LinkedIn email | Required |
-| `LINKEDIN_PASSWORD` | Your LinkedIn password | Required |
-| `SALES_NAVIGATOR_URL` | Sales Navigator URL | https://www.linkedin.com/sales |
-| `HEADLESS_MODE` | Run browser in background | false |
-| `TIMEOUT` | Page load timeout (ms) | 30000 |
-| `MAX_LOGIN_ATTEMPTS` | Login retry attempts | 3 |
-| `LOG_LEVEL` | Logging level (DEBUG/INFO/WARNING) | INFO |
+Configure delays, timeouts, browser settings, and more:
 
-## Usage
+```yaml
+delays:
+  min_typing_delay: 0.05
+  max_typing_delay: 0.15
+  min_action_delay: 1.0
+  max_action_delay: 3.0
 
-### Basic Usage
-
-```bash
-# Run with visible browser (default)
-python linkedin_login_bot.py
-
-# Run in headless mode
-# Set HEADLESS_MODE=true in .env
-python linkedin_login_bot.py
+browser:
+  viewport_width: 1920
+  viewport_height: 1080
+  user_agent: "Mozilla/5.0..."
 ```
 
-## Anti-Detection Features Explained
+### Selectors (config/selectors.yaml)
 
-### 1. Browser Fingerprinting
+All UI selectors in one place:
 
-The bot modifies browser fingerprints to appear as a regular user:
-
-```javascript
-// Removes webdriver flag
-Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-
-// Mocks Chrome runtime
-window.chrome = { runtime: {} };
+```yaml
+login_page:
+  email_input: "#username"
+  password_input: "#password"
+  sign_in_button: 'button[type="submit"]'
 ```
 
-### 2. Human-Like Timing
+## Architecture
 
-Random delays simulate human behavior:
+### Core Components
+
+#### BrowserManager (Singleton)
+- Manages Playwright browser instance
+- Implements anti-detection features
+- Provides page creation and management
+
+#### BasePage (Abstract)
+- Base class for all page objects
+- Provides common page operations
+- Implements human-like behavior
+
+#### Page Objects
+- **LoginPage** - LinkedIn login functionality
+- **FeedPage** - LinkedIn feed interactions
+- **SalesNavigatorPage** - Sales Navigator operations
+
+#### LinkedInBot (Orchestrator)
+- Coordinates all bot operations
+- Manages workflow execution
+- Provides context manager support
+
+### Design Patterns
+
+- **Singleton** - BrowserManager for single browser instance
+- **Page Object Model** - Clean separation of concerns
+- **Factory** - Page object creation
+- **Strategy** - Configurable behavior patterns
+- **Observer** - Event logging and monitoring
+
+## Anti-Detection Features
+
+The framework includes comprehensive anti-detection measures:
+
+- ✅ Browser automation flags disabled
+- ✅ Custom user agent injection
+- ✅ Random viewport sizes
+- ✅ Human-like typing patterns
+- ✅ Random mouse movements
+- ✅ Variable action delays
+- ✅ Realistic scrolling behavior
+- ✅ JavaScript navigator overrides
+- ✅ Plugin and language mocking
+
+## Development
+
+### Adding a New Page Object
+
+1. Create a new file in `src/pages/`
+2. Inherit from `BasePage`
+3. Implement required methods
+4. Add selectors to `config/selectors.yaml`
+
+Example:
+```python
+from src.core.base_page import BasePage
+
+class MyPage(BasePage):
+    def __init__(self, page: Page):
+        settings = get_settings()
+        selectors = settings.get_selectors("my_page")
+        super().__init__(page, selectors)
+
+    def get_url(self) -> str:
+        return "https://linkedin.com/my-page"
+
+    async def verify_loaded(self) -> bool:
+        return await self.is_element_visible(
+            self.get_selector("main_element")
+        )
+```
+
+### Writing Tests
 
 ```python
-# Random delay between 1-8 seconds
-await human_delay(1000, 8000)
-
-# Typing with 50-150ms per character
-await human_type(element, "text")
+@pytest.mark.unit
+async def test_my_function(mock_page):
+    """Test description."""
+    result = await my_function(mock_page)
+    assert result is True
 ```
-
-### 3. Mouse and Scroll Behavior
-
-Natural movements prevent detection:
-
-```python
-# Random mouse movements with curves
-await random_mouse_movement()
-
-# Random scroll amounts
-await random_scroll()
-```
-
-### 4. Security Challenge Detection
-
-Monitors for common security challenges:
-
-- CAPTCHA (reCAPTCHA, image challenges)
-- Two-factor authentication prompts
-- Email/phone verification
-- Unusual activity warnings
 
 ## Troubleshooting
 
 ### Common Issues
 
-#### 1. Login Fails Immediately
-
-**Symptoms:** Bot logs in but immediately fails
-**Solutions:**
-- Check credentials in `.env`
-- Ensure no typos in email/password
-- Try logging in manually first
-- Check for account restrictions
-
-#### 2. CAPTCHA Detected
-
-**Symptoms:** Bot detects CAPTCHA challenge
-**Solutions:**
-- Run in non-headless mode (`HEADLESS_MODE=false`)
-- Complete CAPTCHA manually
-- Wait 24 hours before retrying
-- Use different IP/network
-- Avoid running bot too frequently
-
-#### 3. 2FA/Verification Required
-
-**Symptoms:** LinkedIn asks for verification code
-**Solutions:**
-- Complete verification manually (non-headless mode)
-- Add trusted device to LinkedIn account
-- Use app-based 2FA for faster completion
-- Consider disabling 2FA for testing (not recommended)
-
-#### 4. Playwright Not Installed
-
-**Symptoms:** `playwright command not found`
-**Solutions:**
+**1. Import errors:**
 ```bash
-pip install playwright
+# Ensure you're in the project root
+cd linkedin-lead-bot
+python scripts/run_bot.py
+```
+
+**2. Browser not found:**
+```bash
 playwright install chromium
 ```
 
-#### 5. Module Import Errors
+**3. Login fails:**
+- Check credentials in `.env`
+- Try running in non-headless mode
+- Check for CAPTCHA or 2FA requirements
 
-**Symptoms:** `ModuleNotFoundError`
-**Solutions:**
-```bash
-pip install -r requirements.txt
-python check_setup.py
-```
+**4. Selectors not found:**
+- LinkedIn may have changed their UI
+- Update selectors in `config/selectors.yaml`
 
-#### 6. Screenshots Directory Error
+## Best Practices
 
-**Symptoms:** Cannot create screenshots
-**Solutions:**
-```bash
-mkdir screenshots
-mkdir logs
-chmod 755 screenshots logs
-```
-
-### Debug Mode
-
-Enable detailed logging:
-
-```env
-LOG_LEVEL=DEBUG
-```
-
-This will show:
-- All browser actions
-- Mouse movements
-- Timing delays
-- Element interactions
-
-### Checking Logs
-
-Logs are saved in `logs/` directory:
-
-```bash
-# View latest log
-ls -lt logs/ | head -n 1
-
-# Tail live log
-tail -f logs/linkedin_bot_*.log
-```
-
-## Security Best Practices
-
-### Credential Safety
-
-1. **Never commit `.env` file**
-   - Already in `.gitignore`
-   - Use `.env.example` as template
-
-2. **Use strong passwords**
-   - Unique password for testing account
-   - Consider dedicated test account
-
-3. **Secure credential storage**
-   ```bash
-   chmod 600 .env  # Only owner can read/write
-   ```
-
-### Account Safety
-
-1. **Rate Limiting**
-   - Don't run bot more than 3-5 times per day
-   - Add delays between sessions
-   - Monitor for warning signs
-
-2. **Detection Indicators**
-   - CAPTCHA challenges
-   - Email verification requests
-   - Account warnings
-   - Unusual activity notifications
-
-3. **Risk Mitigation**
-   - Use test account first
-   - Start with headless=false
-   - Monitor LinkedIn emails
-   - Keep screenshots for debugging
-
-### Legal Compliance
-
-1. **Terms of Service**
-   - Review LinkedIn's ToS
-   - Understand automation restrictions
-   - Use responsibly and ethically
-
-2. **Data Privacy**
-   - Only access your own account
-   - Don't scrape user data
-   - Respect privacy regulations
-
-3. **Educational Use**
-   - This is a POC for learning
-   - Not for production use
-   - Understand the technology
-
-## Testing
-
-### Manual Testing
-
-1. **Run setup check**
-   ```bash
-   python check_setup.py
-   ```
-
-2. **Test with visible browser**
-   ```bash
-   # Set HEADLESS_MODE=false
-   python linkedin_login_bot.py
-   ```
-
-3. **Review screenshots**
-   ```bash
-   ls -lt screenshots/
-   ```
-
-4. **Check logs**
-   ```bash
-   cat logs/linkedin_bot_*.log
-   ```
-
-### Automated Testing
-
-```bash
-# Run pytest tests (when implemented)
-pytest tests/ -v
-```
-
-See [TESTING_CHECKLIST.md](TESTING_CHECKLIST.md) for comprehensive testing guide.
-
-## Development Roadmap
-
-See [START_HERE.md](START_HERE.md) for full development roadmap with 9 phases:
-
-1. ✅ Basic Setup
-2. ✅ Simple Login
-3. ✅ Anti-Detection
-4. 🔄 Error Handling
-5. ⏳ Sales Navigator
-6. ⏳ Profile Viewing
-7. ⏳ Connection Requests
-8. ⏳ Messaging
-9. ⏳ Data Export
+1. **Never commit credentials** - Use `.env` file (gitignored)
+2. **Run tests before committing** - Ensure nothing breaks
+3. **Update selectors regularly** - LinkedIn changes their UI
+4. **Use type hints** - Maintain type safety
+5. **Write tests** - Maintain code quality
+6. **Document changes** - Update docs when adding features
 
 ## Contributing
 
-This is a proof-of-concept project. If you'd like to contribute:
-
 1. Fork the repository
-2. Create a feature branch
-3. Add tests for new features
-4. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-MIT License - see LICENSE file for details
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Disclaimer
 
-This tool is for educational purposes only. The authors are not responsible for any misuse or violations of LinkedIn's Terms of Service. Use at your own risk and always comply with applicable laws and terms of service.
+This tool is for educational and testing purposes only. Use responsibly and in accordance with LinkedIn's Terms of Service. The authors are not responsible for any misuse of this software.
 
 ## Support
 
-- Check [QUICK_START.md](QUICK_START.md) for setup issues
-- Review [TESTING_CHECKLIST.md](TESTING_CHECKLIST.md) for debugging
-- See [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) for architecture details
-- Read [START_HERE.md](START_HERE.md) for learning roadmap
+For issues, questions, or contributions:
+- Open an issue on GitHub
+- Check the documentation
+- Review the migration guide
 
 ## Acknowledgments
 
 - Built with [Playwright](https://playwright.dev/)
-- Uses [playwright-stealth](https://github.com/AtuboDad/playwright_stealth) concepts
-- Inspired by automation best practices
-
-## Version
-
-Current Version: 1.0.0 (POC)
-Last Updated: 2025-11-08
+- Inspired by modern test automation practices
+- Following Page Object Model design pattern
